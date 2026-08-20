@@ -2,7 +2,7 @@ import React from "react";
 
 const features = [
   {
-    icon: "✦",
+    icon: "🤖",
     title: "AI Financial Assistant",
     description:
       "Ask questions about your spending, savings, budgets, and financial goals. Get intelligent answers instantly.",
@@ -140,7 +140,7 @@ function Home() {
             <div>
               {/* Badge */}
               <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-xs font-semibold text-violet-700 shadow-sm">
-                <span className="text-violet-600">✦</span>
+                <span className="text-violet-600">⚡</span>
                 AI-powered personal finance
               </div>
 
@@ -327,7 +327,7 @@ function Home() {
               <div className="absolute -bottom-6 -left-6 hidden w-72 rounded-2xl border border-slate-200/90 bg-white/95 p-4 shadow-xl shadow-slate-300/40 backdrop-blur-md sm:block">
                 <div className="flex gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-500/20">
-                    ✦
+                    💡
                   </div>
 
                   <div>
@@ -377,7 +377,7 @@ function Home() {
         >
           <div className="mx-auto max-w-2xl text-center">
             <div className="mb-5 inline-flex rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-xs font-semibold text-violet-700">
-              ✦ Everything in one place
+              ⚡ Everything in one place
             </div>
 
             <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
@@ -443,7 +443,7 @@ function Home() {
               {/* Text */}
               <div>
                 <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-xl text-white shadow-md shadow-violet-500/20">
-                  ✦
+                  🤖
                 </div>
 
                 <p className="text-xs font-bold uppercase tracking-wider text-violet-600">
@@ -484,7 +484,7 @@ function Home() {
               <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-xl shadow-slate-200/70">
                 <div className="mb-5 flex items-center gap-3 border-b border-slate-100 pb-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-sm">
-                    ✦
+                    🤖
                   </div>
 
                   <div>
@@ -507,7 +507,7 @@ function Home() {
                 {/* AI response */}
                 <div className="mt-4 flex gap-3">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-100 text-xs font-bold text-violet-700">
-                    ✦
+                    🤖
                   </div>
 
                   <div className="rounded-2xl rounded-tl-sm border border-slate-200/80 bg-slate-50/90 p-4 shadow-sm">
@@ -604,7 +604,7 @@ function Home() {
 
             <div className="relative">
               <div className="mb-6 inline-flex rounded-full border border-white/20 bg-white/15 px-4 py-2 text-xs font-semibold text-white">
-                ✦ Take control of your finances
+                ⚡ Take control of your finances
               </div>
 
               <h2 className="mx-auto max-w-3xl text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
