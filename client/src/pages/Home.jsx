@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import AuthModal from "./AuthModal";
 
 const features = [
   {
@@ -63,6 +64,12 @@ const transactions = [
 ];
 
 function Home() {
+  const [authModal, setAuthModal] = useState({ isOpen: false, mode: "login" });
+
+  const openLogin = () => setAuthModal({ isOpen: true, mode: "login" });
+  const openSignup = () => setAuthModal({ isOpen: true, mode: "signup" });
+  const closeAuth = () => setAuthModal((prev) => ({ ...prev, isOpen: false }));
+
   return (
     <div className="min-h-screen overflow-hidden bg-slate-50 text-slate-900 antialiased selection:bg-violet-500 selection:text-white">
       {/* ================= NAVBAR ================= */}
@@ -117,11 +124,17 @@ function Home() {
 
           {/* Buttons */}
           <div className="flex items-center gap-3">
-            <button className="hidden px-4 py-2 text-sm font-medium text-slate-600 transition hover:text-slate-900 sm:block">
+            <button
+              onClick={openLogin}
+              className="hidden px-4 py-2 text-sm font-medium text-slate-600 transition hover:text-slate-900 sm:block"
+            >
               Login
             </button>
 
-            <button className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-violet-500/20 transition hover:bg-violet-700 hover:shadow-violet-500/30">
+            <button
+              onClick={openSignup}
+              className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-violet-500/20 transition hover:bg-violet-700 hover:shadow-violet-500/30"
+            >
               Get Started
             </button>
           </div>
@@ -160,14 +173,24 @@ function Home() {
 
               {/* CTA Buttons */}
               <div className="mt-9 flex flex-col gap-3.5 sm:flex-row">
-                <button className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-7 py-3.5 font-semibold text-white shadow-lg shadow-violet-500/25 transition hover:scale-[1.02] hover:shadow-violet-500/35">
+                <button
+                  onClick={openSignup}
+                  className="group inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-7 py-3.5 font-semibold text-white shadow-lg shadow-violet-500/25 transition hover:scale-[1.02] hover:shadow-violet-500/35"
+                >
                   Start Managing Money
                   <span className="ml-2 transition-transform group-hover:translate-x-1">
                     →
                   </span>
                 </button>
 
-                <button className="rounded-xl border border-slate-300 bg-white px-7 py-3.5 font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-slate-900">
+                <button
+                  onClick={() =>
+                    document
+                      .getElementById("how-it-works")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                  className="rounded-xl border border-slate-300 bg-white px-7 py-3.5 font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
+                >
                   See How It Works
                 </button>
               </div>
@@ -620,7 +643,10 @@ function Home() {
                 and let AI guide you toward your financial milestones.
               </p>
 
-              <button className="mt-8 rounded-xl bg-white px-8 py-4 font-bold text-slate-900 shadow-xl transition hover:scale-105 hover:bg-slate-50">
+              <button
+                onClick={openSignup}
+                className="mt-8 rounded-xl bg-white px-8 py-4 font-bold text-slate-900 shadow-xl transition hover:scale-105 hover:bg-slate-50"
+              >
                 Get Started — It's Free →
               </button>
 
@@ -667,6 +693,13 @@ function Home() {
           </div>
         </div>
       </footer>
+
+      {/* ================= AUTH MODAL ================= */}
+      <AuthModal
+        isOpen={authModal.isOpen}
+        initialMode={authModal.mode}
+        onClose={closeAuth}
+      />
     </div>
   );
 }
