@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AuthModal from "./AuthModal";
+import { getCurrentStoredUser, logoutUser } from "../api/Auth/authService";
 
 const features = [
   {
@@ -65,10 +66,23 @@ const transactions = [
 
 function Home() {
   const [authModal, setAuthModal] = useState({ isOpen: false, mode: "login" });
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    setCurrentUser(getCurrentStoredUser());
+  }, []);
 
   const openLogin = () => setAuthModal({ isOpen: true, mode: "login" });
   const openSignup = () => setAuthModal({ isOpen: true, mode: "signup" });
-  const closeAuth = () => setAuthModal((prev) => ({ ...prev, isOpen: false }));
+  const closeAuth = () => {
+    setAuthModal((prev) => ({ ...prev, isOpen: false }));
+    setCurrentUser(getCurrentStoredUser());
+  };
+
+  const handleLogout = () => {
+    logoutUser();
+    setCurrentUser(null);
+  };
 
   return (
     <div className="min-h-screen overflow-hidden bg-slate-50 text-slate-900 antialiased selection:bg-violet-500 selection:text-white">
@@ -122,21 +136,40 @@ function Home() {
             </a>
           </div>
 
-          {/* Buttons */}
+          {/* Buttons / User profile */}
           <div className="flex items-center gap-3">
-            <button
-              onClick={openLogin}
-              className="hidden px-4 py-2 text-sm font-medium text-slate-600 transition hover:text-slate-900 sm:block"
-            >
-              Login
-            </button>
+            {currentUser ? (
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 rounded-xl bg-violet-50 px-3.5 py-1.5 border border-violet-200">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-xs font-semibold text-violet-900">
+                    {currentUser.full_name}
+                  </span>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="rounded-xl border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={openLogin}
+                  className="hidden px-4 py-2 text-sm font-medium text-slate-600 transition hover:text-slate-900 sm:block"
+                >
+                  Login
+                </button>
 
-            <button
-              onClick={openSignup}
-              className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-violet-500/20 transition hover:bg-violet-700 hover:shadow-violet-500/30"
-            >
-              Get Started
-            </button>
+                <button
+                  onClick={openSignup}
+                  className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-violet-500/20 transition hover:bg-violet-700 hover:shadow-violet-500/30"
+                >
+                  Get Started
+                </button>
+              </>
+            )}
           </div>
         </nav>
       </header>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { registerUser, loginUser } from "../api/Auth/authService";
 
 function AuthModal({ isOpen, onClose, initialMode = "login" }) {
   const [mode, setMode] = useState(initialMode); // 'login' | 'signup'
@@ -13,26 +14,19 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   // Sync mode with initialMode when opened
   useEffect(() => {
     if (isOpen) {
       setMode(initialMode);
       setErrors({});
+      setSuccessMessage("");
       setShowPassword(false);
     }
   }, [isOpen, initialMode]);
 
-  // Close on Escape key press
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -55,8 +49,8 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
       [name]: type === "checkbox" ? checked : value,
     }));
     // Clear field-specific error on change
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+    if (errors[name] || errors.general) {
+      setErrors((prev) => ({ ...prev, [name]: "", general: "" }));
     }
   };
 
@@ -72,8 +66,8 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
     }
     if (!formData.password) {
       newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
     }
     if (mode === "signup") {
       if (!formData.confirmPassword) {
@@ -89,20 +83,60 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     setLoading(true);
-    setTimeout(() => {
+    setErrors({});
+    setSuccessMessage("");
+
+    try {
+      if (mode === "signup") {
+        await registerUser({
+          full_name: formData.name.trim(),
+          email: formData.email.trim(),
+          password: formData.password,
+          confirm_password: formData.confirmPassword,
+          terms_accepted: formData.agreeTerms,
+        });
+
+        setSuccessMessage("Account created successfully! Please log in.");
+        setTimeout(() => {
+          setMode("login");
+          setSuccessMessage("");
+        }, 1500);
+      } else {
+        const data = await loginUser({
+          email: formData.email.trim(),
+          password: formData.password,
+          remember_me: formData.rememberMe,
+        });
+
+        // Store auth details
+        localStorage.setItem("token", data.access_token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        setSuccessMessage(`Welcome back, ${data.user.full_name}!`);
+        setTimeout(() => {
+          onClose();
+          window.location.reload(); // Refresh to update user session state
+        }, 800);
+      }
+    } catch (err) {
+      console.error("Auth error:", err);
+      let errorMsg = "Something went wrong. Please check your connection.";
+      if (err.response?.data?.detail) {
+        if (typeof err.response.data.detail === "string") {
+          errorMsg = err.response.data.detail;
+        } else if (Array.isArray(err.response.data.detail)) {
+          errorMsg = err.response.data.detail.map((d) => d.msg).join(", ");
+        }
+      }
+      setErrors({ general: errorMsg });
+    } finally {
       setLoading(false);
-      alert(
-        mode === "login"
-          ? `Logged in successfully as ${formData.email}!`
-          : `Account created for ${formData.name} (${formData.email})!`
-      );
-      onClose();
-    }, 1000);
+    }
   };
 
   return (
@@ -141,6 +175,20 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
           </p>
         </div>
 
+        {/* Success Banner */}
+        {successMessage && (
+          <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-medium text-emerald-800">
+            {successMessage}
+          </div>
+        )}
+
+        {/* General Error Banner */}
+        {errors.general && (
+          <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-medium text-rose-800">
+            {errors.general}
+          </div>
+        )}
+
         {/* Tab Switcher */}
         <div className="mt-6 grid grid-cols-2 gap-1 rounded-2xl bg-slate-100 p-1">
           <button
@@ -148,6 +196,7 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
             onClick={() => {
               setMode("login");
               setErrors({});
+              setSuccessMessage("");
             }}
             className={`rounded-xl py-2 text-xs font-bold transition ${
               mode === "login"
@@ -162,6 +211,7 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
             onClick={() => {
               setMode("signup");
               setErrors({});
+              setSuccessMessage("");
             }}
             className={`rounded-xl py-2 text-xs font-bold transition ${
               mode === "signup"
