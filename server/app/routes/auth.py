@@ -10,8 +10,7 @@ from app.core.security import (hash_password,verify_password,create_access_token
 
 router = APIRouter(prefix="/api/auth",tags=["Authentication"])
 
-@router.post("/signup",response_model=UserResponse,status_code=status.HTTP_201_CREATED
-)
+@router.post("/signup",response_model=UserResponse,status_code=status.HTTP_201_CREATED)
 def signup(user_data: SignupRequest,db: Session = Depends(get_db)):
 
 
