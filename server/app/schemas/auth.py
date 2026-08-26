@@ -1,28 +1,16 @@
 from pydantic import BaseModel, EmailStr, Field, model_validator
 
 
-# =========================================================
-# SIGNUP REQUEST
-# =========================================================
 
 class SignupRequest(BaseModel):
 
-    full_name: str = Field(
-        min_length=2,
-        max_length=100
-    )
+    full_name: str = Field(min_length=2,max_length=100)
 
     email: EmailStr
 
-    password: str = Field(
-        min_length=8,
-        max_length=100
-    )
+    password: str = Field(min_length=8,max_length=100)
 
-    confirm_password: str = Field(
-        min_length=8,
-        max_length=100
-    )
+    confirm_password: str = Field(min_length=8,max_length=100)
 
     terms_accepted: bool
 
@@ -44,24 +32,16 @@ class SignupRequest(BaseModel):
         return self
 
 
-# =========================================================
-# LOGIN REQUEST
-# =========================================================
 
 class LoginRequest(BaseModel):
 
     email: EmailStr
 
-    password: str = Field(
-        min_length=1
-    )
+    password: str = Field(min_length=1)
 
     remember_me: bool = False
 
 
-# =========================================================
-# USER RESPONSE
-# =========================================================
 
 class UserResponse(BaseModel):
 
@@ -71,14 +51,10 @@ class UserResponse(BaseModel):
 
     email: EmailStr
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = {"from_attributes": True}
 
 
-# =========================================================
-# LOGIN RESPONSE
-# =========================================================
+
 
 class LoginResponse(BaseModel):
 
