@@ -171,7 +171,7 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
           <p className="mt-1.5 text-xs text-slate-500">
             {mode === "login"
               ? "Enter your credentials to access your financial dashboard"
-              : "Start tracking and optimizing your finances with AI"}
+              : "Start tracking and managing your personal finances"}
           </p>
         </div>
 

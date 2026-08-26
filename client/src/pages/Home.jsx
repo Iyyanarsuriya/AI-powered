@@ -4,8 +4,8 @@ import { getCurrentStoredUser, logoutUser } from "../api/Auth/authService";
 
 const features = [
   {
-    icon: "🤖",
-    title: "AI Financial Assistant",
+    icon: "📊",
+    title: "Financial Assistant",
     description:
       "Ask questions about your spending, savings, budgets, and financial goals. Get intelligent answers instantly.",
     color: "violet",
@@ -498,12 +498,12 @@ function Home() {
             <div className="relative grid items-center gap-12 lg:grid-cols-2">
               {/* Text */}
               <div>
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-xl text-white shadow-md shadow-violet-500/20">
-                  🤖
+                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-xl font-bold text-white shadow-md shadow-violet-500/20">
+                  ₹
                 </div>
 
                 <p className="text-xs font-bold uppercase tracking-wider text-violet-600">
-                  AI FINANCIAL ASSISTANT
+                  FINANCIAL ASSISTANT
                 </p>
 
                 <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
@@ -512,7 +512,7 @@ function Home() {
                 </h2>
 
                 <p className="mt-5 text-base leading-relaxed text-slate-600">
-                  Stop wondering where your money goes. Ask your AI
+                  Stop wondering where your money goes. Ask your financial
                   assistant anything about your finances and get clear,
                   personalized answers in seconds.
                 </p>
@@ -539,13 +539,13 @@ function Home() {
               {/* AI Chat Demo */}
               <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-xl shadow-slate-200/70">
                 <div className="mb-5 flex items-center gap-3 border-b border-slate-100 pb-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-sm">
-                    🤖
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-sm font-bold text-white shadow-sm">
+                    ₹
                   </div>
 
                   <div>
                     <p className="text-sm font-bold text-slate-900">
-                      Finance AI
+                      Finance Assistant
                     </p>
                     <p className="text-[11px] font-semibold text-emerald-600">
                       ● Active Now
@@ -563,7 +563,7 @@ function Home() {
                 {/* AI response */}
                 <div className="mt-4 flex gap-3">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-100 text-xs font-bold text-violet-700">
-                    🤖
+                    💬
                   </div>
 
                   <div className="rounded-2xl rounded-tl-sm border border-slate-200/80 bg-slate-50/90 p-4 shadow-sm">
