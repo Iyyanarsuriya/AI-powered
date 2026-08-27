@@ -1,4 +1,4 @@
-import axiosInstance from "../axiosinstance";
+import axiosInstance from "./axiosinstance";
 
 /**
  * Register a new user
@@ -31,5 +31,16 @@ export const logoutUser = () => {
  */
 export const getCurrentStoredUser = () => {
   const user = localStorage.getItem("user");
-  return user ? JSON.parse(user) : null;
+  try {
+    return user ? JSON.parse(user) : null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Get stored JWT access token
+ */
+export const getStoredToken = () => {
+  return localStorage.getItem("token");
 };

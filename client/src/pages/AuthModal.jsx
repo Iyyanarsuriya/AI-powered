@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { registerUser, loginUser } from "../api/Auth/authService";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function AuthModal({ isOpen, onClose, initialMode = "login" }) {
+  const { login, register } = useAuth();
+  const navigate = useNavigate();
   const [mode, setMode] = useState(initialMode); // 'login' | 'signup'
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -25,8 +28,6 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
       setShowPassword(false);
     }
   }, [isOpen, initialMode]);
-
-
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -93,7 +94,7 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
 
     try {
       if (mode === "signup") {
-        await registerUser({
+        await register({
           full_name: formData.name.trim(),
           email: formData.email.trim(),
           password: formData.password,
@@ -107,21 +108,17 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
           setSuccessMessage("");
         }, 1500);
       } else {
-        const data = await loginUser({
+        const data = await login({
           email: formData.email.trim(),
           password: formData.password,
           remember_me: formData.rememberMe,
         });
 
-        // Store auth details
-        localStorage.setItem("token", data.access_token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-
         setSuccessMessage(`Welcome back, ${data.user.full_name}!`);
         setTimeout(() => {
           onClose();
-          window.location.reload(); // Refresh to update user session state
-        }, 800);
+          navigate("/dashboard");
+        }, 600);
       }
     } catch (err) {
       console.error("Auth error:", err);
@@ -138,6 +135,7 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
