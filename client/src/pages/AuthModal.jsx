@@ -7,6 +7,7 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
   const navigate = useNavigate();
   const [mode, setMode] = useState(initialMode); // 'login' | 'signup'
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -19,6 +20,19 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
+  const switchMode = (newMode) => {
+    setMode(newMode);
+    setErrors({});
+    setSuccessMessage("");
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+    setFormData((prev) => ({
+      ...prev,
+      password: "",
+      confirmPassword: "",
+    }));
+  };
+
   // Sync mode with initialMode when opened
   useEffect(() => {
     if (isOpen) {
@@ -26,6 +40,15 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
       setErrors({});
       setSuccessMessage("");
       setShowPassword(false);
+      setShowConfirmPassword(false);
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        agreeTerms: false,
+        rememberMe: false,
+      });
     }
   }, [isOpen, initialMode]);
 
@@ -40,6 +63,7 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
       document.body.style.overflow = "unset";
     };
   }, [isOpen]);
+
 
   if (!isOpen) return null;
 
@@ -94,6 +118,7 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
 
     try {
       if (mode === "signup") {
+        // Register the account
         await register({
           full_name: formData.name.trim(),
           email: formData.email.trim(),
@@ -102,11 +127,22 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
           terms_accepted: formData.agreeTerms,
         });
 
-        setSuccessMessage("Account created successfully! Please log in.");
+        // Reset credentials so the user enters them manually on the login screen
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+          agreeTerms: false,
+          rememberMe: false,
+        });
+        setShowPassword(false);
+
+        setSuccessMessage("Account created successfully! Please enter your credentials to log in.");
         setTimeout(() => {
           setMode("login");
           setSuccessMessage("");
-        }, 1500);
+        }, 1200);
       } else {
         const data = await login({
           email: formData.email.trim(),
@@ -191,11 +227,7 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
         <div className="mt-6 grid grid-cols-2 gap-1 rounded-2xl bg-slate-100 p-1">
           <button
             type="button"
-            onClick={() => {
-              setMode("login");
-              setErrors({});
-              setSuccessMessage("");
-            }}
+            onClick={() => switchMode("login")}
             className={`rounded-xl py-2 text-xs font-bold transition ${
               mode === "login"
                 ? "bg-white text-slate-900 shadow-sm"
@@ -206,11 +238,7 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setMode("signup");
-              setErrors({});
-              setSuccessMessage("");
-            }}
+            onClick={() => switchMode("signup")}
             className={`rounded-xl py-2 text-xs font-bold transition ${
               mode === "signup"
                 ? "bg-white text-slate-900 shadow-sm"
@@ -447,10 +475,7 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
               Don't have an account?{" "}
               <button
                 type="button"
-                onClick={() => {
-                  setMode("signup");
-                  setErrors({});
-                }}
+                onClick={() => switchMode("signup")}
                 className="font-bold text-violet-600 hover:text-violet-700"
               >
                 Sign up for free
@@ -461,10 +486,7 @@ function AuthModal({ isOpen, onClose, initialMode = "login" }) {
               Already have an account?{" "}
               <button
                 type="button"
-                onClick={() => {
-                  setMode("login");
-                  setErrors({});
-                }}
+                onClick={() => switchMode("login")}
                 className="font-bold text-violet-600 hover:text-violet-700"
               >
                 Log in
