@@ -15,15 +15,12 @@ class SignupRequest(BaseModel):
     terms_accepted: bool
 
 
-    # Check password confirmation and terms
     @model_validator(mode="after")
-    def validate_signup(self):
+    def validate_signup(self: SignupRequest):
 
-        # Password confirmation
         if self.password != self.confirm_password:
             raise ValueError("Passwords do not match")
 
-        # Terms and privacy
         if not self.terms_accepted:
             raise ValueError(
                 "You must accept the Terms of Service and Privacy Policy"

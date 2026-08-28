@@ -4,9 +4,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from app.core.config import settings
 
 
-# ==================================================
-# DATABASE ENGINE
-# ==================================================
+
 
 engine = create_engine(
     settings.DATABASE_URL,
@@ -14,9 +12,6 @@ engine = create_engine(
 )
 
 
-# ==================================================
-# DATABASE SESSION
-# ==================================================
 
 SessionLocal = sessionmaker(
     autocommit=False,
@@ -25,16 +20,11 @@ SessionLocal = sessionmaker(
 )
 
 
-# ==================================================
-# BASE CLASS
-# ==================================================
 
 Base = declarative_base()
 
 
-# ==================================================
-# DATABASE DEPENDENCY
-# ==================================================
+
 
 def get_db():
 

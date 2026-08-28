@@ -4,6 +4,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.database.connection import Base, engine
 from app.routes.auth import router as auth_router
+from app.routes.income import router as income_router
+
+# Ensure all models are registered for table creation
+import app.models  # noqa: F401
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -23,6 +27,8 @@ app.add_middleware(
 
 # Include API routes
 app.include_router(auth_router)
+app.include_router(income_router)
+
 
 
 @app.get("/")

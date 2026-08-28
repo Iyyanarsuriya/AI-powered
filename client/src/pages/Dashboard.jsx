@@ -1,9 +1,15 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import {
+  fetchIncomes,
+  createIncome,
+  deleteIncome,
+} from "../api/Income/incomeService";
 
 const STORAGE_TX_PREFIX = "finance_user_tx_";
 const STORAGE_CAT_PREFIX = "finance_user_cat_";
+
 
 const defaultCategories = [
   { id: "food_dining", name: "Food & Dining", type: "expense", icon: "🍔", budget: 8000, color: "bg-amber-500" },
@@ -112,7 +118,7 @@ function Dashboard() {
   };
 
   // ==========================================
-  // DYNAMIC TRANSACTIONS (User Data)
+  // DYNAMIC TRANSACTIONS (User Data & API Sync)
   // ==========================================
   const [transactions, setTransactions] = useState(() => {
     try {
@@ -122,6 +128,48 @@ function Dashboard() {
       return [];
     }
   });
+
+  // Load incomes from MySQL database on mount
+  useEffect(() => {
+    const loadRemoteIncomes = async () => {
+      try {
+        const dbIncomes = await fetchIncomes();
+        if (Array.isArray(dbIncomes)) {
+          const formattedIncomes = dbIncomes.map((inc) => ({
+            id: `income_${inc.id}`,
+            dbId: inc.id,
+            title: inc.source,
+            amount: inc.amount,
+            type: "income",
+            category: inc.category,
+            notes: inc.notes || "",
+            date: new Date(inc.date).toLocaleDateString("en-IN", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            }),
+            time: new Date(inc.date).toLocaleTimeString("en-IN", {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+          }));
+
+          setTransactions((prev) => {
+            const expenses = prev.filter((t) => t.type !== "income");
+            const combined = [...formattedIncomes, ...expenses];
+            localStorage.setItem(txStorageKey, JSON.stringify(combined));
+            return combined;
+          });
+        }
+      } catch (err) {
+        console.warn("Could not sync with Income database API (using local cache):", err);
+      }
+    };
+
+    if (user) {
+      loadRemoteIncomes();
+    }
+  }, [user, txStorageKey]);
 
   const updateTransactions = (newTxList) => {
     setTransactions(newTxList);
@@ -138,8 +186,8 @@ function Dashboard() {
     navigate("/");
   };
 
-  // Add Transaction Handler
-  const handleCreateTransaction = (e) => {
+  // Add Transaction Handler (Saves income to MySQL database if type is income)
+  const handleCreateTransaction = async (e) => {
     e.preventDefault();
     if (!txForm.title.trim() || !txForm.amount || parseFloat(txForm.amount) <= 0) return;
 
@@ -153,8 +201,28 @@ function Dashboard() {
       }
     }
 
+    let savedDbId = null;
+
+    // If income, persist directly to MySQL via Income API
+    if (txForm.type === "income") {
+      try {
+        const result = await createIncome({
+          source: txForm.title.trim(),
+          amount: parseFloat(txForm.amount),
+          category: selectedCategory,
+          notes: txForm.notes.trim() || null,
+        });
+        if (result && result.id) {
+          savedDbId = result.id;
+        }
+      } catch (err) {
+        console.warn("Saved locally, server sync failed:", err);
+      }
+    }
+
     const newTx = {
-      id: Date.now(),
+      id: savedDbId ? `income_${savedDbId}` : Date.now(),
+      dbId: savedDbId,
       title: txForm.title.trim(),
       amount: parseFloat(txForm.amount),
       type: txForm.type,
@@ -183,10 +251,18 @@ function Dashboard() {
     setShowAddModal(false);
   };
 
-  // Delete Transaction Handler
-  const handleDeleteTransaction = (id) => {
+  // Delete Transaction Handler (Deletes from MySQL if it's an income record)
+  const handleDeleteTransaction = async (id, dbId, type) => {
+    if (type === "income" && dbId) {
+      try {
+        await deleteIncome(dbId);
+      } catch (err) {
+        console.warn("Could not delete from backend API:", err);
+      }
+    }
     updateTransactions(transactions.filter((tx) => tx.id !== id));
   };
+
 
   // ==========================================
   // DYNAMIC COMPUTATIONS (100% Data-Driven)
@@ -669,7 +745,7 @@ function Dashboard() {
                               </span>
 
                               <button
-                                onClick={() => handleDeleteTransaction(tx.id)}
+                                onClick={() => handleDeleteTransaction(tx.id, tx.dbId, tx.type)}
                                 className="opacity-0 group-hover:opacity-100 rounded-lg p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition"
                                 title="Delete transaction"
                               >
