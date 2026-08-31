@@ -16,7 +16,7 @@ class SignupRequest(BaseModel):
 
 
     @model_validator(mode="after")
-    def validate_signup(self: SignupRequest):
+    def validate_signup(self):
 
         if self.password != self.confirm_password:
             raise ValueError("Passwords do not match")
